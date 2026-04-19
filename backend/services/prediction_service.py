@@ -1,10 +1,26 @@
-import joblib
-import numpy as np
+import mlflow.pyfunc
+import pandas as pd
 
-model=joblib.load("models/model.pkl")
+class PredictionService:
 
-def predict_student(data_dict):
-    values = list(data_dict.values())
-    arr = np.array(values).reshape(1, -1)
-    prediction = model.predict(arr)
-    return int(prediction[0])
+    def __init__(self):
+        self.model = mlflow.pyfunc.load_model(
+            "models:/adaptive_model@production"
+        )
+
+    def predict(self, data):
+        # dict → DataFrame
+        df = pd.DataFrame([data])
+
+        # enforce correct column order (VERY IMPORTANT)
+        df = df[[
+            "StudyHours", "Attendance", "Resources", "Extracurricular",
+            "Motivation", "Internet", "Age", "LearningStyle",
+            "OnlineCourses", "Discussions", "AssignmentCompletion",
+            "EduTech", "StressLevel"
+        ]]
+
+        # prediction
+        prediction = self.model.predict(df)
+
+        return prediction.tolist()  # make it JSON serializable

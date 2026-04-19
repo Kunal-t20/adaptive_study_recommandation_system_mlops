@@ -1,13 +1,15 @@
 from fastapi import APIRouter
 from app.schemas import StudentInput,FeedbackInput
-from services.prediction_service import predict_student
 import os
+from services.prediction_service import PredictionService
+
+service = PredictionService()
 
 router=APIRouter()
 
 @router.post('/predict')
 def predict(data:StudentInput):
-    result=predict_student(data.dict())
+    result=service.predict(data.dict())
 
     return {"Prediction":result}
 

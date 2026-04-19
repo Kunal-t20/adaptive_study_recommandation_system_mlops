@@ -1,0 +1,23 @@
+artifact_path: file:F:/Projects/MLOPS/Adaptive_learning_recommandation_system/backend/mlruns/1/models/m-9006500f41e6481c91978e458ce4846f/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-9006500f41e6481c91978e458ce4846f
+model_size_bytes: 10282892
+model_uuid: m-9006500f41e6481c91978e458ce4846f
+prompts: null
+run_id: ee95a34a2a6d4cd9826bf148fbe6e663
+utc_time_created: '2026-04-19 07:18:48.416100'
