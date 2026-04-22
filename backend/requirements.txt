@@ -12,3 +12,6 @@ python-dotenv
 mlflow
 
 pytest
+
+streamlit 
+requests
