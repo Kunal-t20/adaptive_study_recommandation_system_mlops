@@ -1,0 +1,22 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    run-on: ubuntu-latest
+
+  steps:
+    - uses: action/checkout@v4
+
+    - uses: action/checkout@v5
+      with:
+        python-version: "3.12"
+    
+    - run: pip install -r requirements.txt
+
+    - run: pytest
+
+    
