@@ -10,7 +10,23 @@ router = APIRouter()
 # ------------------ PREDICT ------------------
 @router.post('/predict')
 def predict(data: StudentInput):
-    result = service.predict(data.dict())
+    input_data = data.dict()
+
+    result = service.predict(input_data)
+
+    log_path = os.path.join("data", "predictions.csv")
+    os.makedirs("data", exist_ok=True)
+
+    row = input_data.copy()
+    row["prediction"] = result[0]
+
+    df = pd.DataFrame([row])
+
+    if not os.path.exists(log_path):
+        df.to_csv(log_path, index=False)
+    else:
+        df.to_csv(log_path, mode="a", header=False, index=False)
+
     return {"Prediction": result}
 
 
@@ -18,19 +34,45 @@ def predict(data: StudentInput):
 @router.post("/feedback")
 def feedback(data: FeedbackInput):
 
-    # correct path (important)
     file_path = os.path.join("data", "feedback.csv")
 
-    # convert to dataframe
     df = pd.DataFrame([data.dict()])
 
-    # ensure folder exists
     os.makedirs("data", exist_ok=True)
 
-    # save data
     if not os.path.exists(file_path):
         df.to_csv(file_path, index=False)
     else:
         df.to_csv(file_path, mode="a", header=False, index=False)
 
     return {"message": "feedback stored successfully"}
+
+
+# ------------------ METRICS ------------------
+@router.get("/metrics")
+def metrics():
+
+    file_path = os.path.join("data", "feedback.csv")
+
+    if not os.path.exists(file_path):
+        return {"message": "No feedback data yet"}
+
+    df = pd.read_csv(file_path)
+
+    accuracy = (df["predicted"] == df["actual"]).mean()
+
+    return {
+        "total_samples": len(df),
+        "accuracy": float(accuracy)
+    }
+
+@router.post("/retrain")
+def retrain():
+    from ml.retrain import retrain_model
+
+    result = retrain_model()
+
+    return {
+        "message": "Model retrained",
+        "details": result
+    }
