@@ -1,10 +1,15 @@
 from fastapi import FastAPI
 from app.routes import router
 
-app=FastAPI()
+app = FastAPI(
+    title="Adaptive Learning Recommendation System",
+    description="MLOps-based system with MLflow, feedback loop, retraining and monitoring",
+    version="1.0.0"
+)
 
-app.include_router(router)
+app.include_router(router, tags=["API"])
 
-@app.get("/")
+
+@app.get("/", tags=["Health"])
 def home():
-    return {"message":"app is running"}
+    return {"message": "app is running"}

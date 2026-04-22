@@ -10,7 +10,7 @@ router = APIRouter()
 # ------------------ PREDICT ------------------
 @router.post('/predict')
 def predict(data: StudentInput):
-    input_data = data.dict()
+    input_data = data.model_dump()
 
     result = service.predict(input_data)
 
@@ -36,7 +36,7 @@ def feedback(data: FeedbackInput):
 
     file_path = os.path.join("data", "feedback.csv")
 
-    df = pd.DataFrame([data.dict()])
+    df = pd.DataFrame([data.model_dump()])
 
     os.makedirs("data", exist_ok=True)
 

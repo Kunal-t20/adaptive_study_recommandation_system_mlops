@@ -10,3 +10,5 @@ ipykernel
 python-dotenv
 
 mlflow
+
+pytest

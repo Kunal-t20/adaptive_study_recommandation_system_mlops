@@ -7,7 +7,6 @@ class StudentInput(BaseModel):
     Extracurricular: int
     Motivation: int
     Internet: int
-    Gender: int
     Age: int
     LearningStyle: int
     OnlineCourses: int
@@ -17,20 +16,6 @@ class StudentInput(BaseModel):
     StressLevel: int
 
 
-class FeedbackInput(BaseModel):
-    StudyHours: float
-    Attendance: float
-    Resources: int
-    Extracurricular: int
-    Motivation: int
-    Internet: int
-    Gender: int
-    Age: int
-    LearningStyle: int
-    OnlineCourses: int
-    Discussions: int
-    AssignmentCompletion: int
-    EduTech: int
-    StressLevel: int
+class FeedbackInput(StudentInput):
     predicted: int
     actual: int
