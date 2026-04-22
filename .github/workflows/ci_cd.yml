@@ -28,3 +28,16 @@ jobs:
         run: pytest
         env:
           TESTING: "1"
+
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps: 
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: backend
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/app:latest .
+
+    
