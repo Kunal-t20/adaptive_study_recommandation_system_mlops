@@ -3,20 +3,27 @@ name: CI/CD
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   tests:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  steps:
-    - uses: action/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - uses: action/checkout@v5
-      with:
-        python-version: "3.12"
-    
-    - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
 
-    - run: pytest
-
-    
+      - name: Run tests
+        run: |
+          cd backend
+          pytest
