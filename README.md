@@ -46,29 +46,44 @@ User → Streamlit UI → FastAPI API → ML Model → Prediction
 ## Project Structure
 ```
 .
-
-backend/
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── routes.py
+│   │   ├── schemas.py
+│   │
+│   ├── services/
+│   │   └── prediction_service.py
+│   │
+│   ├── ml/
+│   │   ├── preprocessing.py
+│   │   ├── training.py
+│   │   └── retrain.py
+│   │
+│   ├── data/
+│   │   ├── student_performance.csv
+│   │   ├── feedback.csv
+│   │   └── predictions.csv
+│   │
+│   ├── tests/
+│   │   ├── test_api.py
+│   │   └── conftest.py
+│   │
+│   ├── mlruns/        # MLflow artifacts
+│   ├── notebook/
+│   │   └── notebook.ipynb
+│   │
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── mlflow.db
 │
-├── app/
-│ ├── main.py # FastAPI entry point
-│ ├── routes.py # API endpoints
-│ ├── schemas.py # Input validation
+├── frontend/
+│   └── app.py
 │
-├── services/
-│ └── prediction_service.py # Model loading & prediction
+├── .github/workflows/
+│   └── ci_cd.yml
 │
-├── ml/
-│ └── retrain.py # Retraining pipeline
-│
-├── data/
-│ ├── student_performance.csv
-│ ├── feedback.csv
-│
-├── tests/
-│ └── test_api.py # API tests
-│
-frontend/
-└── app.py # Streamlit UI
+└── README.md
 
 ```
 
