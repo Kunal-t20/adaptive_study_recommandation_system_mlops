@@ -7,19 +7,26 @@ class PredictionService:
 
     def __init__(self):
 
-        if os.getenv("TESTING") == "1":
+        try:
+            if os.getenv("TESTING") == "1":
+                self.model = None
+
+            elif os.getenv("DOCKER") == "1":
+                self.model = mlflow.pyfunc.load_model("model")
+
+            else:
+                self.model = mlflow.pyfunc.load_model(
+                    "models:/adaptive_model@production"
+                )
+
+        except Exception as e:
+            print("Model loading failed:", e)
             self.model = None
-        else:
-            self.model = mlflow.pyfunc.load_model(
-                "models:/adaptive_model@production"
-            )
 
     def predict(self, data):
 
-        # dict → DataFrame
         df = pd.DataFrame([data])
 
-        # enforce correct column order
         df = df[[
             "StudyHours", "Attendance", "Resources", "Extracurricular",
             "Motivation", "Internet", "Age", "LearningStyle",
@@ -27,10 +34,9 @@ class PredictionService:
             "EduTech", "StressLevel"
         ]]
 
-        # if testing → return dummy output
         if self.model is None:
             return [1]
 
         prediction = self.model.predict(df)
 
-        return prediction.tolist()
+        return list(prediction)

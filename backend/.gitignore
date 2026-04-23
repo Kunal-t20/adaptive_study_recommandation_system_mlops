@@ -1,2 +1,8 @@
+mlruns/
+myenv/
+notebook/
+__pycache__/
+*.pyc
+mlflow.db
 .env
 myenv
