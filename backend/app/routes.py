@@ -14,11 +14,13 @@ def predict(data: StudentInput):
 
     result = service.predict(input_data)
 
+    prediction = int(result[0])   
+
     log_path = os.path.join("data", "predictions.csv")
     os.makedirs("data", exist_ok=True)
 
     row = input_data.copy()
-    row["prediction"] = result[0]
+    row["prediction"] = prediction 
 
     df = pd.DataFrame([row])
 
@@ -27,7 +29,7 @@ def predict(data: StudentInput):
     else:
         df.to_csv(log_path, mode="a", header=False, index=False)
 
-    return {"Prediction": result}
+    return {"prediction": prediction}   # <-- FIX
 
 
 # ------------------ FEEDBACK ------------------

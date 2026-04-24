@@ -77,62 +77,83 @@ if predict_btn:
     try:
         response = requests.post("http://127.0.0.1:8000/predict", json=data)
 
-        if response.status_code == 200:
+        if response.status_code != 200:
+            st.error(f"API Error: {response.status_code}")
+            st.stop()
 
-            raw_pred = response.json()["Prediction"][0]
+        res_json = response.json()
 
-            try:
-                prediction = int(raw_pred)
-            except:
-                prediction = -1
+        # 🔥 DEBUG (DON'T REMOVE UNTIL STABLE)
+        st.write("RAW RESPONSE:", res_json)
 
-            label_map = {
-                0: "Low Performance",
-                1: "Medium Performance",
-                2: "High Performance"
+        if "prediction" not in res_json:
+            st.error(f"Unexpected response format: {res_json}")
+            st.stop()
+
+        raw_pred = res_json["prediction"]
+
+        # 🔥 HANDLE ALL CASES (no assumptions)
+        if isinstance(raw_pred, list):
+            prediction = int(raw_pred[0])
+        elif isinstance(raw_pred, (int, float)):
+            prediction = int(raw_pred)
+        elif isinstance(raw_pred, str):
+            # map string outputs
+            string_map = {
+                "Low": 0,
+                "Medium": 1,
+                "High": 2
             }
-
-            result = label_map.get(prediction, "Unknown")
-
-            st.markdown("---")
-
-            # -------- RESULT DISPLAY -------- #
-            if prediction == 0:
-                st.error(f"📉 Prediction: {result}")
-            elif prediction == 1:
-                st.warning(f"📊 Prediction: {result}")
-            elif prediction == 2:
-                st.success(f"📈 Prediction: {result}")
-            else:
-                st.error("Prediction could not be interpreted")
-
-            # -------- RECOMMENDATIONS -------- #
-            st.subheader("🎯 Personalized Recommendations")
-
-            if study_hours < 3:
-                st.info("Increase daily study hours")
-
-            if attendance < 75:
-                st.info("Improve attendance")
-
-            if stress > 7:
-                st.info("Reduce stress levels")
-
-            if motivation < 4:
-                st.info("Work on motivation")
-
-            if learning_style == 0:
-                st.write("🧠 Visual learner → use diagrams & charts")
-            elif learning_style == 1:
-                st.write("🧠 Auditory learner → use lectures & discussions")
-            else:
-                st.write("🧠 Kinesthetic learner → practice hands-on")
-
+            prediction = string_map.get(raw_pred, -1)
         else:
-            st.error("API Error")
+            prediction = -1
 
+        label_map = {
+            0: "Low Performance",
+            1: "Medium Performance",
+            2: "High Performance"
+        }
+
+        result = label_map.get(prediction, "Unknown")
+
+        st.markdown("---")
+
+        # -------- RESULT DISPLAY -------- #
+        if prediction == 0:
+            st.error(f"📉 Prediction: {result}")
+        elif prediction == 1:
+            st.warning(f"📊 Prediction: {result}")
+        elif prediction == 2:
+            st.success(f"📈 Prediction: {result}")
+        else:
+            st.error(f"Prediction could not be interpreted → {raw_pred}")
+
+        # -------- RECOMMENDATIONS -------- #
+        st.subheader("🎯 Personalized Recommendations")
+
+        if study_hours < 3:
+            st.info("Increase daily study hours")
+
+        if attendance < 75:
+            st.info("Improve attendance")
+
+        if stress > 7:
+            st.info("Reduce stress levels")
+
+        if motivation < 4:
+            st.info("Work on motivation")
+
+        if learning_style == 0:
+            st.write("🧠 Visual learner → use diagrams & charts")
+        elif learning_style == 1:
+            st.write("🧠 Auditory learner → use lectures & discussions")
+        else:
+            st.write("🧠 Kinesthetic learner → practice hands-on")
+
+    except requests.exceptions.ConnectionError:
+        st.error("🚫 Backend server not running")
     except Exception as e:
-        st.error(f"Connection Error: {e}")
+        st.error(f"Unexpected Error: {e}")
 
 # ---------------- METRICS ---------------- #
 
@@ -145,10 +166,17 @@ try:
     if metrics.status_code == 200:
         data = metrics.json()
 
-        st.write(f"Feedback Samples: {data['total_samples']}")
+        st.write("RAW METRICS:", data)
+
+        if "total_samples" in data:
+            st.write(f"Feedback Samples: {data['total_samples']}")
+        else:
+            st.write(data.get("message", "No data available"))
 
     else:
         st.warning("Metrics not available")
 
-except:
-    st.warning("Could not connect to backend")
+except requests.exceptions.ConnectionError:
+    st.warning("Backend not running")
+except Exception as e:
+    st.warning(f"Error fetching metrics: {e}")
